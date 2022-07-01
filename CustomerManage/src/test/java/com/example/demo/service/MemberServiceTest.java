@@ -1,16 +1,28 @@
 package com.example.demo.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.example.demo.domain.Member;
+import com.example.demo.repository.MemoryMemberRepository;
 
-import java.lang.reflect.Member;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 class MemberServiceTest {
 	
 	MemberService memberservice = new MemberService();
+	MemoryMemberRepository memberRepository = new MemoryMemberRepository();
+	
+	@BeforeEach
+	public 
+	@AfterEach
+	public void afterEach() {
+		memberRepository.clearStore();
+	}
 	
 	@Test
-	void Join() { //회원가입
+	void join() { //회원가입
 		//given
 		Member member = new Member();
 		member.setName("hello");
@@ -19,10 +31,39 @@ class MemberServiceTest {
 		Long saveId = memberservice.join(member);
 		
 		//then
-		Member findMember = memberservice.findOne(savceId).get();
+		Member findMember = memberservice.findOne(saveId).get();
 		assertThat(member.getName()).isEqualTo(findMember.getName());
 	}
 		
+	
+	@Test
+	public void duplicatedMember() {
+	
+		Member mm1 = new Member();
+		mm1.setName("spring");
+		
+		Member mm2 = new Member();
+		mm2.setName("spring");
+
+		
+		//when
+		memberservice.join(mm1);
+		IllegalStateException e = assertThrows(IllegalStateException.class, () -> memberservice.join(mm2));
+		
+		
+		/*
+		try {
+			memberservice.join(mm2);
+			fail();
+		} catch (IllegalStateException e){
+			assertThat(e.getMessage()).isEqualTo("이미 존재하는 최원입니다.");
+		} 
+		
+		*/
+		
+		assertThat(e.getMessage()).isEqualTo("이미 존재하는 최원입니다.");
+	}
+	
 	@Test
 	void FindMembers() {
 		
