@@ -7,15 +7,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.*
+import static org.junit.jupiter.api.Assertions.*;
 
 class MemberServiceTest {
 	
-	MemberService memberservice = new MemberService();
-	MemoryMemberRepository memberRepository = new MemoryMemberRepository();
+	MemberService memberservice ;
+	MemoryMemberRepository memberRepository;
 	
 	@BeforeEach
-	public 
+	public void beforeEach() {
+		memberRepository = new MemoryMemberRepository();
+		memberservice = new MemberService();
+	}
+	
 	@AfterEach
 	public void afterEach() {
 		memberRepository.clearStore();
@@ -49,7 +56,7 @@ class MemberServiceTest {
 		//when
 		memberservice.join(mm1);
 		IllegalStateException e = assertThrows(IllegalStateException.class, () -> memberservice.join(mm2));
-		
+		assertThat(e.getMessage()).isEqualTo("이미 존재하는 최원입니다.");
 		
 		/*
 		try {
@@ -60,8 +67,6 @@ class MemberServiceTest {
 		} 
 		
 		*/
-		
-		assertThat(e.getMessage()).isEqualTo("이미 존재하는 최원입니다.");
 	}
 	
 	@Test
